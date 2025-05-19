@@ -7,6 +7,12 @@ a quiet space for critical reading, hosted on your own raspberry pi. share your 
 
 ---
 
+![local library, wifi](https://github.com/user-attachments/assets/63249fb9-2573-43c8-9c9c-5bf2d34fbdd7)
+![local library, landing](https://github.com/user-attachments/assets/d73b956a-d67d-4875-ab9f-d4559a901f58)
+
+
+---
+
 ## quick start
 
 1. **get the code**
