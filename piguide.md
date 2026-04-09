@@ -2,7 +2,7 @@
 
 a friendly, step-by-step guide to create your own personal library website using a raspberry pi. perfect for book lovers, archivists, or anyone who wants to share their collection with friends and family. no technical experience required!
 
-> 💡 this guide will help you create a simple website that displays your books, articles, or any other media you want to share. we'll use a raspberry pi (a tiny, affordable computer) to host it right from your home.
+> this guide will help you create a simple website that displays your books, articles, or any other media you want to share. we'll use a raspberry pi (a tiny, affordable computer) to host it right from your home.
 
 ---
 
@@ -43,6 +43,7 @@ first, we need to put the operating system on your pi. think of this like instal
 after the imager finishes, put the sd card in your pi, plug it in, and turn it on.
 
 ### 2. find your pi's ip address
+**alternatives: plug your pi into a monitor, or use a tool like tailscale**
 
 your pi needs an address so other devices can find it on your network. it's like a phone number for computers.
 
@@ -85,11 +86,12 @@ sudo apt install nginx hostapd dnsmasq iptables-persistent
 ```
 
 ### 3. configure the wifi access point
+**replace nvim with nano for a friendlier editor**
 
 #### 3.1 set up hostapd
 this creates your wifi network. create a new configuration file:
 ```bash
-sudo nano /etc/hostapd/hostapd.conf
+sudo nvim /etc/hostapd/hostapd.conf
 ```
 
 add these settings:
@@ -107,7 +109,7 @@ ignore_broadcast_ssid=0
 
 tell the system where to find this configuration:
 ```bash
-sudo nano /etc/default/hostapd
+sudo nvim /etc/default/hostapd
 ```
 
 add this line:
@@ -119,7 +121,7 @@ DAEMON_CONF="/etc/hostapd/hostapd.conf"
 this handles network settings. create a new configuration:
 ```bash
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-sudo nano /etc/dnsmasq.conf
+sudo nvim /etc/dnsmasq.conf
 ```
 
 add these settings:
@@ -133,7 +135,7 @@ address=/#/192.168.4.1
 #### 3.3 set up static ip
 this gives your pi a fixed address on the network:
 ```bash
-sudo nano /etc/dhcpcd.conf
+sudo nvim /etc/dhcpcd.conf
 ```
 
 add at the end:
@@ -147,10 +149,10 @@ interface wlan0
 
 this allows your pi to handle network traffic:
 ```bash
-sudo nano /etc/sysctl.conf
+sudo nvim /etc/sysctl.conf
 ```
 
-uncomment this line:
+add this line:
 ```
 net.ipv4.ip_forward=1
 ```
@@ -160,7 +162,7 @@ net.ipv4.ip_forward=1
 #### 5.1 configure nginx
 set up nginx to serve your library:
 ```bash
-sudo nano /etc/nginx/sites-enabled/default
+sudo nvim /etc/nginx/sites-enabled/default
 ```
 
 replace the content with:
@@ -249,11 +251,8 @@ sudo netfilter-persistent save
 
 to make sure everything starts correctly on boot, create a startup script:
 ```bash
-# create a scripts directory
 sudo mkdir -p /usr/local/lib/library.local/scripts
-
-# create the startup script
-sudo nano /usr/local/lib/library.local/scripts/start-library.sh
+sudo nvim /usr/local/lib/library.local/scripts/start-library.sh
 ```
 
 add this content:
@@ -292,7 +291,7 @@ sudo chmod +x /usr/local/lib/library.local/scripts/start-library.sh
 
 create a systemd service to run it at startup:
 ```bash
-sudo nano /etc/systemd/system/library-startup.service
+sudo nvim /etc/systemd/system/library-startup.service
 ```
 
 add this content:
@@ -333,20 +332,29 @@ sudo systemctl start nginx
 
 ---
 
+## keeping your library safe and running
+
+* **backup regularly**: copy your website files to your computer
+* **keep your pi updated**: run `sudo apt update && sudo apt upgrade` occasionally
+* **check the status**: if your site stops working, run `sudo service nginx status`
+
+
+---
+
 ## making your library better
 
-### basic customization
+### optional customization
 
 1. **change the title**: edit the `<title>` tag in your html
 2. **update the header**: modify the text in the `<header>` section
 3. **add your books**: copy the article template and fill in your book details
 4. **organize content**: use the details/summary sections to group your content
 
-### adding style (optional)
+### adding style
 
 if you want to make your library look nicer, you can add a `styles.css` file:
 ```bash
-sudo nano /var/www/html/styles.css
+sudo nvim /var/www/html/styles.css
 ```
 
 add this to your html's `<head>` section:
@@ -354,50 +362,7 @@ add this to your html's `<head>` section:
 <link rel="stylesheet" href="styles.css">
 ```
 
----
-
-## keeping your library safe and running
-
-* **backup regularly**: copy your website files to your computer
-* **keep your pi updated**: run `sudo apt update && sudo apt upgrade` occasionally
-* **check the status**: if your site stops working, run `sudo service nginx status`
-
----
-
-## need help?
-
-| problem                    | solution                                                    |
-| -------------------------- | ----------------------------------------------------------- |
-| can't connect to pi        | check your ethernet cable and pi's power light             |
-| website looks wrong        | make sure your files are in the right folder               |
-| site won't load           | check if nginx is running with `sudo service nginx status` |
-
----
-
-## fun extras
-
-* add book covers to your articles
-* create different sections for different types of media
-* add a "recently added" section
-* include book previews
-* automate syncing new content from a cloud backup
-
----
-
-happy reading and sharing! 📚
-
----
-
-## tips for a smoother experience
-
-* **bookmark your pi's ip** in your browser for quick access.
-* **set a static ip** through your router so the pi doesn't change addresses.
-* **add new files to the html folder** as your library grows.
-* if you're fancy, **use a usb drive or external ssd** for more storage and symlink it into `/var/www/html`.
-
----
-
-## optional: serve your site outside your network (advanced!)
+### serve your site outside your network (advanced!)
 
 if you want people outside your house to access your library:
 
@@ -405,25 +370,3 @@ if you want people outside your house to access your library:
 2. use a **dynamic dns service** like no-ip to get a custom url
 
 *note: this can expose your pi to the open internet, so make sure your site has no sensitive content or vulnerable code.*
-
----
-
-## final thoughts
-
-and that's it! you've now got a self-hosted curated library site running off a raspberry pi. low power, always on, and totally yours.
-
-throw it on your shelf, plug it into ethernet, and let your little library live forever 
-
----
-
-## troubleshooting cheat sheet
-
-| problem                    | fix                                                         |
-| -------------------------- | ----------------------------------------------------------- |
-| can't ssh in               | double-check ip address and that ssh is enabled             |
-| webpage shows default page | make sure your `index.html` replaced the original           |
-| site not loading           | confirm nginx is running: `sudo service nginx status` |
-
----
-
-happy hosting! 🌐
